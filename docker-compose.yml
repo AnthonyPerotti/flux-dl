@@ -17,3 +17,14 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
+    labels:
+      casaos.name: "Flux"
+      casaos.title.en_us: "Flux"
+      casaos.title.pt_br: "Flux"
+      casaos.category: "Downloader"
+      casaos.description: "Download videos and audio from YouTube, Instagram, TikTok and 1000+ sites directly on your server."
+      casaos.icon: "https://raw.githubusercontent.com/AnthonyPerotti/flux-dl/main/docs/icon.png"
+      casaos.port_map: "8484"
+      casaos.index: "/"
+      casaos.hostname: ""
+      casaos.store_app_id: "flux-dl"
