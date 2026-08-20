@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flux — Media Downloader</title>
+  <meta name="description" content="Baixe vídeos e áudios do YouTube, Instagram, TikTok e mais de 1000 sites diretamente no seu servidor." />
+  <meta name="theme-color" content="#080910" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- ─── Header ──────────────────────────────────────────────────────────── -->
+    <header>
+      <div class="logo">
+        <div class="logo-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L4 6v6c0 5.5 3.4 10.7 8 12 4.6-1.3 8-6.5 8-12V6l-8-4zm-1 14l-4-4 1.4-1.4L11 13.2l5.6-5.6L18 9l-7 7z"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="logo-name">Flux</span>
+          <span class="logo-tagline" data-i18n="app.tagline">Baixe vídeos e áudios de qualquer lugar</span>
+        </div>
+      </div>
+      <button id="lang-btn" class="lang-toggle" aria-label="Switch language" data-i18n="lang.toggle">English</button>
+    </header>
+
+    <!-- ─── URL Input Card ───────────────────────────────────────────────────── -->
+    <div class="card">
+      <form id="url-form" autocomplete="off">
+        <div class="input-wrapper">
+          <span class="input-icon" aria-hidden="true">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
+              <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
+            </svg>
+          </span>
+          <input
+            id="url-input"
+            type="url"
+            inputmode="url"
+            autocomplete="off"
+            spellcheck="false"
+            data-i18n-placeholder="input.placeholder"
+            placeholder="Cole o link do YouTube, Instagram, TikTok..."
+            aria-label="URL do vídeo"
+          />
+        </div>
+        <button id="analyze-btn" class="btn btn-primary" type="submit" aria-label="Analisar URL">
+          <span class="spinner" aria-hidden="true"></span>
+          <span class="btn-label" data-i18n="input.analyze">Analisar</span>
+        </button>
+      </form>
+      <p id="url-error" class="error-message" role="alert"></p>
+
+      <!-- ─── Info Panel (shown after analysis) ─────────────────────────────── -->
+      <div id="info-panel" role="region" aria-label="Informações do vídeo">
+        <hr class="divider" />
+
+        <div class="media-info">
+          <img id="media-thumb" class="media-thumbnail" src="" alt="Thumbnail do vídeo" loading="lazy" />
+          <div class="media-details">
+            <p id="media-title" class="media-title"></p>
+            <div class="media-meta">
+              <span class="meta-item" id="media-uploader-wrap">
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span id="media-uploader"></span>
+              </span>
+              <span class="meta-item" id="media-duration-wrap">
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+                </svg>
+                <span id="media-duration"></span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quality selector -->
+        <div class="quality-section">
+          <p class="section-title" data-i18n="info.quality.title">Qualidade do Download</p>
+
+          <div class="mode-tabs" role="tablist" aria-label="Modo de download">
+            <button id="tab-video" class="mode-tab active" role="tab" aria-selected="true" data-i18n="info.quality.video">Vídeo</button>
+            <button id="tab-audio" class="mode-tab" role="tab" aria-selected="false" data-i18n="info.quality.audio">Somente Áudio</button>
+          </div>
+
+          <div id="quality-grid-video" class="quality-grid" role="radiogroup" aria-label="Qualidade do vídeo"></div>
+          <div id="quality-grid-audio" class="quality-grid" role="radiogroup" aria-label="Qualidade do áudio" style="display:none;"></div>
+        </div>
+
+        <!-- Size estimate -->
+        <div class="size-estimate" aria-live="polite">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          <span data-i18n="info.size.estimated">Tamanho estimado:</span>
+          <strong id="size-estimate-value">—</strong>
+        </div>
+
+        <!-- Download button -->
+        <div class="download-action">
+          <button id="download-btn" class="btn btn-download" type="button" aria-label="Iniciar download no servidor">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            <span data-i18n="info.download">Baixar no Servidor</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── Download Queue ───────────────────────────────────────────────────── -->
+    <section id="queue-section" aria-labelledby="queue-heading">
+      <p id="queue-heading" class="section-title" data-i18n="queue.title">Fila de Downloads</p>
+      <div id="queue-list" class="queue-list">
+        <p id="queue-empty" class="queue-empty" data-i18n="queue.empty">Nenhum download em andamento.</p>
+      </div>
+    </section>
+
+    <!-- ─── Files Library ────────────────────────────────────────────────────── -->
+    <section id="library-section" aria-labelledby="library-heading">
+      <p id="library-heading" class="section-title" data-i18n="library.title">Arquivos Baixados</p>
+      <div id="library-list" class="library-list">
+        <p id="library-empty" class="library-empty" data-i18n="library.empty">Nenhum arquivo baixado ainda.</p>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ─── Toast Container ──────────────────────────────────────────────────── -->
+  <div id="toast-container" aria-live="polite" aria-atomic="false"></div>
+
+  <script src="/js/i18n.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
