@@ -16,7 +16,7 @@ WORKDIR /app
 
 # Copy backend dependencies first for layer caching
 COPY backend/package*.json ./backend/
-RUN cd backend && npm ci --omit=dev
+RUN cd backend && npm install --omit=dev --no-audit --no-fund
 
 # Copy backend source
 COPY backend/ ./backend/
